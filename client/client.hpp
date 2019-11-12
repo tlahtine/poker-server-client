@@ -14,12 +14,12 @@
 int players = 0;
 int players_in = 0;
 int player_turn = 0;
-struct mySocket{
+int game_no;
+std::string game_name = "Dpokr";
+struct Player{
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     int port = 8888;
     std::string ipAddress = "127.0.0.1";
-};
-struct Player{
     std::string name;
     int number;
     bool added = false;
