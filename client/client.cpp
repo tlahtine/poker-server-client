@@ -18,7 +18,8 @@ void handleMessage(std::string msgIn, Player& player){
         }
         else{
             int players_needed = players - players_in;
-            rMsg += std::to_string(players_needed) + " more players needed.";
+            rMsg += std::to_string(players_needed) + " more players needed.\n";
+            rMsg += "Waiting for players...";
         }
     }
     if(cmd == "JOIN"){
@@ -28,42 +29,61 @@ void handleMessage(std::string msgIn, Player& player){
                 std::to_string(players_needed) + 
                 " more players needed.";
     }
-    if(cmd == "DEAL" || cmd == "DRAW"){
+    if(cmd == "DEAL" || cmd == "DRAW" || cmd == "DRWO"){
         rMsg = msg.substr(2);
         player_turn = (int)msg[0] - 48;
+        if(player_turn != player.number && player_turn != 0){
+            rMsg += "\nWaiting for other players to draw...";
+        }
+        if(cmd != "DRWO"){
+            std::string cards = msg.substr(2);
+            int card_no = 0;
+            while(card_no < 5){
+                player.cards[card_no].first = cards[0];
+                player.cards[card_no].second = cards[1];
+                cards.erase(0, 3);
+                ++card_no;
+            }
+            player.handValue = cards;
+            player.printHand();
+        }
     }
     if(cmd == "SHOW"){
         rMsg = msg;
+        player.printHand();
         player.shown = true;
-    }
-    if(cmd == "ERRJ"){
-        rMsg = msg;
-        std::cout << rMsg << std::endl;
-        std::cout << "Name: ";
-        std::string name;
-        std::cin >> name;
-        std::string msgOut = "JOIN:" + name;
-        send(player.sock, msgOut.c_str(), msgOut.size(), 0);
     }
     std::cout << rMsg << std::endl;
 }
 void newGame(Player& player){
-    char buf[4096];
     while(true) {
+        char buf[4096];
         memset(buf, 0, 4096);
         int bytesReceived = recv(player.sock, buf, 4096, 0);
         if (bytesReceived == -1)
         {
-            std::cout << "There was an error getting response from server\r\n";
+            std::cout << "There was an error getting response from server\n";
         }
         else
         {
             std::string msgIn = std::string(buf, bytesReceived);
             handleMessage(msgIn, player);
             if(player.cards_dealt && !player.draw && player_turn == player.number){
-                std::cout << "Discards (e.g. 124 or 0 to stand pat): ";
                 std::string discards;
-                std::cin >> discards;
+                bool valid = false;
+                while(!valid){
+                    std::cout << "Discards (e.g. 124 or 0 to stand pat): ";
+                    std::cin >> discards;
+                    for(int i = 0; i < discards.size(); ++i){
+                        if(!isdigit(discards[i]) || discards[i] > '5'){
+                            std::cout << "Invalid discards!\n";
+                            valid = false;
+                        }
+                        else{
+                            valid = true;
+                        }
+                    }
+                }
                 std::string msgOut = "DRAW:" + discards + ":" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
                 player.draw = true;
@@ -74,27 +94,32 @@ void newGame(Player& player){
                 std::string msgOut = "PLRS:Draw poker:" + 
                     std::to_string(players) + ":" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
+                std::cout << "Waiting for players...\n";
             }
             if(players - players_in == 0 && !player.cards_dealt && players != 0){
                 player.cards_dealt = true;
                 std::string msgOut = "DEAL:5:" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
             }
-            if(player.draw && player_turn == 0 && player.host){
+            if(player.draw && player_turn == 0 && !player.shown){
                 std::string msgOut = "SHOW:" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
             }
             if(player.shown){
-                player.added = false;
-                player.host = false;
-                player.cards_dealt = false;
-                player.draw = false;
-                player.shown = false;
                 std::cout << "New game? (y/n): ";
                 char c;
                 std::cin >> c;
                 if(c == 'y'){
-                    //TBA
+                    system("clear");
+                    player.added = false;
+                    player.host = false;
+                    player.cards_dealt = false;
+                    player.draw = false;
+                    player.shown = false;
+                    std::string msgOut = "JOIN:" + game_name + ":" + player.name;
+                    send(player.sock, msgOut.c_str(), msgOut.size(), 0);
+                    player.added = true;
+                    continue;
                 }
                 break;
             }
@@ -104,7 +129,6 @@ void newGame(Player& player){
             send(player.sock, msgOut.c_str(), msgOut.size(), 0);
         }
     }
-
 }
 int main()
 {
