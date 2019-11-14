@@ -148,11 +148,12 @@ int main()
 {
     Player player;
     sockaddr_in hint;
-    std::cout << "IP address and port:\n";
-    std::cin >> player.ipAddress >> player.port;
     std::cout << "Name: ";
     std::cin >> player.name;
     
+    std::cout << "IP address and port:\n";
+    std::cin >> player.ipAddress >> player.port;
+
     hint.sin_family = AF_INET;
     hint.sin_port = htons(player.port);
     inet_pton(AF_INET, player.ipAddress.c_str(), &hint.sin_addr);
