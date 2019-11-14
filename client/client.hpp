@@ -69,6 +69,5 @@ void Player::printHand(){
             std::cout << hand[j][i] << " ";
         }
     }
-    std::cout << handValue << "\n";
 }
 #endif

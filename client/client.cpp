@@ -89,8 +89,14 @@ void newGame(Player& player){
                 player.draw = true;
             }
             if(player.host && players == 0){
-                std::cout << "Players: ";
-                std::cin >> players;
+                bool valid = false;
+                while(!valid){
+                    std::cout << "Players (1-5): ";
+                    std::cin >> players;
+                    if(players >= 1 && players <= 5){
+                        valid = true;
+                    }
+                }
                 std::string msgOut = "PLRS:Draw poker:" + 
                     std::to_string(players) + ":" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
