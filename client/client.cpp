@@ -150,8 +150,8 @@ int main()
     sockaddr_in hint;
     std::cout << "Name: ";
     std::cin >> player.name;
-    
-    std::cout << "IP address and port:\n";
+
+    std::cout << "Server IP address and port:\n";
     std::cin >> player.ipAddress >> player.port;
 
     hint.sin_family = AF_INET;
