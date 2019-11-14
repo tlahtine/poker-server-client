@@ -1,4 +1,10 @@
 #include "client.hpp"
+int players = 0;
+int players_in = 0;
+int player_turn = 0;
+int game_no;
+std::string game_name = "Dpokr";
+
 void handleMessage(std::string msgIn, Player& player){
     std::string cmd = msgIn.substr(0, 4);
     std::string msg = msgIn.substr(5);
@@ -108,6 +114,8 @@ void newGame(Player& player){
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
             }
             if(player.draw && player_turn == 0 && !player.shown){
+                std::cout << "Press enter to continue: ";
+                std::cin.ignore().get();
                 std::string msgOut = "SHOW:" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
             }

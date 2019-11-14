@@ -12,17 +12,7 @@
 #include <array>
 #include <unordered_map>
 #include <bits/stdc++.h> 
-int players = 0;
-int players_in = 0;
-int player_turn = 0;
-int game_no;
-std::unordered_map<std::string, std::string> suits = {
-    {"s", "\u2664"},
-    {"h", "\u2665"},
-    {"d", "\u2666"},
-    {"c", "\u2667"}};
 
-std::string game_name = "Dpokr";
 struct Player{
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     int port = 8888;
@@ -42,6 +32,12 @@ struct Player{
 void Player::printHand(){
     system("clear");
     hand.clear();
+    std::unordered_map<std::string, std::string> suits = {
+        {"s", "\u2664"},
+        {"h", "\u2665"},
+        {"d", "\u2666"},
+        {"c", "\u2667"}};
+
     for(int i = 0; i < 5; i++){
         std::vector<std::string> card = 
            {" ------------- ", 
