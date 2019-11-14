@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <string>
-#include <vector>
+#include <array>
 #include <cstdlib>
 
 int getServerSocket(sockaddr_in address);

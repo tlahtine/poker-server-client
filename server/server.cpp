@@ -49,6 +49,7 @@ void newGame(std::string msg, int sd){
 void handleMessage(int sd, std::string msgIn){
     std::string cmd = msgIn.substr(0, 4);
     std::string msg = msgIn.substr(5);
+    std::cout << sd << ">> " << msgIn << "\n";
     int game_number = -1;
     if(cmd == "JOIN"){
         if(games.size() == 0){
@@ -87,11 +88,11 @@ void handleMessage(int sd, std::string msgIn){
     }
     if(cmd == "DRAW"){
         std::string discards = msgIn.substr(5);
+        int dlen = discards.size() - 2;
+        discards = discards.substr(0, dlen);
         games[game_number].drawCards(discards, sd);
     }
     if(cmd == "SHOW"){
-        if(sd == games[game_number].host_socket){
-            games[game_number].showHands();
-        }
+        games[game_number].showHands(sd);
     }
 }

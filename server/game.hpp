@@ -20,7 +20,7 @@ struct Game{
     void dealHand(int socket);
     void drawCards(std::string discards, int socket);
     void addPlayer(std::string name, int socket, int game_no);
-    void showHands();
+    void showHands(int socket);
     std::string getWinner();
 };
 #endif

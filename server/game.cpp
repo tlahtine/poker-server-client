@@ -43,12 +43,6 @@ std::string Game::getWinner(){
 }
 void Game::addPlayer(std::string name, int socket, int game_no){
     std::string msgOut;
-    for(auto a : players){
-        if(a.name == name){
-            msgOut = "ERRJ:Name " + name + " already in use.";
-            send(socket, msgOut.c_str(), msgOut.size(), 0);
-        }
-    }
     Player player;
     player.name = name;
     player.socket = socket;
@@ -63,6 +57,7 @@ void Game::addPlayer(std::string name, int socket, int game_no){
         else{
             msgOut = "JOIN:" + name;
         }
+        std::cout << socket << "<< " << msgOut << "\n";
         send(a.socket, msgOut.c_str(), msgOut.size(), 0);
     }
 }
@@ -82,7 +77,7 @@ void Game::dealHand(int socket){
     players[player_no].getHand();
     std::string msgOut = "DEAL:" + std::to_string(players[player_turn].socket) + ":" + 
         players[player_no].hand + " " + handValues[players[player_no].value];
-    
+    std::cout << socket << "<< " << msgOut << "\n";
     send(socket, msgOut.c_str(), msgOut.size(), 0);
 }
 void Game::drawCards(std::string str, int socket){
@@ -118,35 +113,39 @@ void Game::drawCards(std::string str, int socket){
         players[player_no].getHand();
     }
     ++player_turn;
+    std::string turn = std::to_string(players[player_turn].socket);
+    if(player_turn > players.size() - 1){
+        turn = "0";
+    }
     std::string msgOut;
     for(auto a : players){
         if(a.socket == socket){
-            msgOut = "DRAW:" + std::to_string(players[player_turn].socket) + 
+            msgOut = "DRAW:" + turn + 
                 ":" + a.hand + " " + 
                 handValues[a.value];
         }
         else{
             if(str != "0"){
-                msgOut = "DRAW:" + std::to_string(players[player_turn].socket) + 
+                msgOut = "DRWO:" + turn + 
                     ":" + players[player_no].name + " draws " + 
                     std::to_string(discards.size());
             }
             else{
-                msgOut = "DRAW:" + std::to_string(players[player_turn].socket) + 
+                msgOut = "DRWO:" + turn + 
                     ":" + players[player_no].name + " stands pat";
             }
         }
+        std::cout << a.socket << "<< " << msgOut << "\n";
         send(a.socket, msgOut.c_str(), msgOut.size(), 0);
     }
 }
-void Game::showHands(){
+void Game::showHands(int socket){
     std::string msgOut = "SHOW:";
     std::string winner = getWinner();
     for(auto a : players){
-        msgOut += a.name + ":" + a.hand + " " + handValues[a.value] + "\n";
+        msgOut += a.name + ":" + a.hand + handValues[a.value] + "\n";
     }
     msgOut += "Winner is " + winner + "\n";
-    for(auto a : players){
-        send(a.socket, msgOut.c_str(), msgOut.size(), 0);
-    }
+    std::cout << socket << "<< " << msgOut << "\n";
+    send(socket, msgOut.c_str(), msgOut.size(), 0);
 }
