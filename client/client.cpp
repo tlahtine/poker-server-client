@@ -103,7 +103,7 @@ void newGame(Player& player){
                         valid = true;
                     }
                 }
-                std::string msgOut = "PLRS:Draw poker:" + 
+                std::string msgOut = "PLRS:" + 
                     std::to_string(players) + ":" + std::to_string(game_no);
                 send(player.sock, msgOut.c_str(), msgOut.size(), 0);
                 std::cout << "Waiting for players...\n";
@@ -123,6 +123,10 @@ void newGame(Player& player){
                 std::cout << "New game? (y/n): ";
                 char c;
                 std::cin >> c;
+                if(player.host){
+                    std::string msgOut = "NEWG:" + std::to_string(game_no);
+                    send(player.sock, msgOut.c_str(), msgOut.size(), 0);
+                }
                 if(c == 'y'){
                     system("clear");
                     player.added = false;

@@ -13,6 +13,7 @@ struct Game{
     int players_max = 0;
     int player_turn = 0;
     int cardCount = 0;
+    bool game_on = true;
     std::vector<std::pair<int, std::string>> deck;
     std::vector<Player> players;
     void newGame(std::string name);

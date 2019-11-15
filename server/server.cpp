@@ -95,4 +95,17 @@ void handleMessage(int sd, std::string msgIn){
     if(cmd == "SHOW"){
         games[game_number].showHands(sd);
     }
+    if(cmd == "NEWG"){
+        games[game_number].game_on = false;
+        bool games_on = false;
+        for(Game game : games){
+            if(game.game_on){
+                games_on = true;
+                break;
+            }
+        }
+        if(!games_on){
+            games.clear();
+        }
+    }
 }

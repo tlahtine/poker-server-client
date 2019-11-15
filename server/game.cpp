@@ -146,6 +146,11 @@ void Game::showHands(int socket){
         msgOut += a.name + ":" + a.hand + handValues[a.value] + "\n";
     }
     msgOut += "Winner is " + winner + "\n";
+    for(auto a : players){
+        if(a.socket == socket && a.name == winner){
+            msgOut += "Congratulations! You win!\n";
+        }
+    }
     std::cout << socket << "<< " << msgOut << "\n";
     send(socket, msgOut.c_str(), msgOut.size(), 0);
 }
